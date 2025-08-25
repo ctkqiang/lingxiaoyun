@@ -8,6 +8,10 @@ func main() {
 	app := fiber.New()
 
 	app.Get("/", func(c *fiber.Ctx) error {
+		c.Accepts("application/json")
+		c.Accepts("application/xml")
+		c.Accepts("text/html")
+
 		return c.SendString("Hello, World!")
 	})
 
