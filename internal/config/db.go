@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"log"
 
 	"gorm.io/driver/mysql"
@@ -9,8 +10,10 @@ import (
 
 var DB *gorm.DB
 
+var DatabaseName string = "LingXiaoYun"
+
 func ConnectDatabase() {
-	dsn := "root:root@tcp(127.0.0.1:3306)/go_rest_api?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := fmt.Sprintf("root:@tcp(127.0.0.1:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local", DatabaseName)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {
