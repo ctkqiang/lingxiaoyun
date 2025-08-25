@@ -1,11 +1,16 @@
 package main
 
 import (
+	"lingxiaoyun/internal/config"
+	"lingxiaoyun/routes"
+	"log"
+
 	"github.com/gofiber/fiber/v2"
 )
 
 func main() {
 	app := fiber.New()
+	config.ConnectDatabase()
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		c.Accepts("application/json")
@@ -15,5 +20,7 @@ func main() {
 		return c.SendString("Hello, World!")
 	})
 
-	app.Listen(":3000")
+	routes.UserRoutes(app)
+
+	log.Fatal(app.Listen(":3000"))
 }
