@@ -6,18 +6,27 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/template/html/v2"
 )
 
 func main() {
-	app := fiber.New()
+	engine := html.New("./views", ".html")
+
+	app := fiber.New(fiber.Config{
+		Views: engine,
+	})
+
 	config.ConnectDatabase()
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		c.Accepts("application/json")
-		c.Accepts("application/xml")
-		c.Accepts("text/html")
-
-		return c.SendString("Hello, World!")
+		if c.Accepts("html") == "html" {
+			return c.Render("index", fiber.Map{
+				"Title": "Title",
+				"Msg":   "Message lalalal",
+				"Body":  "Body",
+			})
+		}
+		return c.JSON(fiber.Map{"message": "Hello, World!"})
 	})
 
 	routes.UserRoutes(app)
