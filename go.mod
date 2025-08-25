@@ -2,6 +2,8 @@ module lingxiaoyun
 
 go 1.21.13
 
+require github.com/gofiber/fiber v1.14.6
+
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
@@ -11,6 +13,7 @@ require (
 	github.com/gofiber/template/html/v2 v2.1.3 // indirect
 	github.com/gofiber/utils v1.1.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
+	github.com/gorilla/schema v1.1.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/klauspost/compress v1.17.9 // indirect
