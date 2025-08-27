@@ -1,11 +1,10 @@
 package models
 
 type Parent struct {
-	ID     uint   `gorm:"primaryKey"`
-	UserID uint   `json:"user_id"`
-	Name   string `json:"name"`
-	Email  string `json:"email"`
-	Phone  string `json:"phone"`
-
-	User User `gorm:"foreignKey:UserID"`
+	ID     uint
+	UserID uint
+	User   User `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Name   string
+	Email  string
+	Phone  string
 }

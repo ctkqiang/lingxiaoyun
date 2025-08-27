@@ -1,11 +1,654 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ .Title }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 自定义动画和样式 */
+        .form-control:focus {
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+            border-color: #86b7fe;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link {
+            transition: all 0.3s ease;
+        }
+        
+        .password-strength {
+            height: 5px;
+            margin-top: 5px;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        
+        .btn-loading {
+            position: relative;
+            pointer-events: none;
+        }
+        
+        .btn-loading::after {
+            content: "";
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin-top: -8px;
+            margin-left: -8px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            min-height: 20px;
+            font-size: 0.875rem;
+        }
+    </style>
 </head>
-<body>
-    <h1>{{ .Msg }}</h1>
-    <p>{{ .Body }}</p>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-50 min-vh-100 d-flex align-items-center justify-content-center p-3">
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <!-- 卡片阴影和动画效果 -->
+            <div class="card shadow-lg rounded-3 overflow-hidden transform transition-all duration-300 hover:shadow-xl">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h3 class="mb-0"><i class="fas fa-user-circle me-2"></i>梦里大学认证中心</h3>
+                </div>
+                
+                <div class="card-body p-5">
+                    <!-- 标签页导航 -->
+                    <ul class="nav nav-tabs mb-4" id="tabMenu" role="tablist">
+                        <li class="nav-item w-50 text-center" role="presentation">
+                            <button class="nav-link active w-100" id="login-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#login" type="button" role="tab" aria-selected="true">
+                                <i class="fas fa-sign-in-alt me-1"></i>登录
+                            </button>
+                        </li>
+                        <li class="nav-item w-50 text-center" role="presentation">
+                            <button class="nav-link w-100" id="register-tab" data-bs-toggle="tab" 
+                                    data-bs-target="#register" type="button" role="tab" aria-selected="false">
+                                <i class="fas fa-user-plus me-1"></i>注册
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <!-- 标签页内容 -->
+                    <div class="tab-content" id="tabContent">
+                        <!-- 登录表单 -->
+                        <div class="tab-pane fade show active" id="login" role="tabpanel">
+                            <form id="loginForm" novalidate>
+                                <div class="mb-4">
+                                    <label for="loginUsername" class="form-label">用户名</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-user"></i></span>
+                                        <input type="text" class="form-control" id="loginUsername" 
+                                               required minlength="3" maxlength="20">
+                                        <div class="invalid-feedback">请输入3-20位的用户名</div>
+                                    </div>
+                                    <div class="error-message text-danger mt-1"></div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="loginPassword" class="form-label">密码</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-lock"></i></span>
+                                        <input type="password" class="form-control" id="loginPassword" 
+                                               required minlength="6">
+                                        <button type="button" class="btn btn-outline-secondary toggle-password" 
+                                                data-target="loginPassword">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <div class="invalid-feedback">请输入至少6位的密码</div>
+                                    </div>
+                                    <div class="error-message text-danger mt-1"></div>
+                                </div>
+                                
+                                <div class="mb-4 form-check">
+                                    <input type="checkbox" class="form-check-input" id="rememberMe">
+                                    <label class="form-check-label" for="rememberMe">记住我</label>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary w-100 py-2">
+                                    <i class="fas fa-sign-in-alt me-1"></i>登录
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <!-- 注册表单 -->
+                        <div class="tab-pane fade" id="register" role="tabpanel">
+                            <form id="registerForm" novalidate>
+                                <div class="mb-3">
+                                    <label for="regUsername" class="form-label">用户名</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-user"></i></span>
+                                        <input type="text" class="form-control" id="regUsername" 
+                                               required minlength="3" maxlength="20">
+                                        <div class="invalid-feedback">请输入3-20位的用户名</div>
+                                    </div>
+                                    <div class="error-message text-danger mt-1"></div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="regPassword" class="form-label">密码</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-lock"></i></span>
+                                        <input type="password" class="form-control" id="regPassword" 
+                                               required minlength="6">
+                                        <button type="button" class="btn btn-outline-secondary toggle-password" 
+                                                data-target="regPassword">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <div class="invalid-feedback">请输入至少6位的密码</div>
+                                    </div>
+                                    <!-- 密码强度指示器 -->
+                                    <div class="password-strength bg-danger w-0"></div>
+                                    <div class="text-muted small mt-1">
+                                        <span id="passwordStrengthText">密码强度: 未输入</span>
+                                    </div>
+                                    <div class="error-message text-danger mt-1"></div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="regEmail" class="form-label">邮箱</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-envelope"></i></span>
+                                        <input type="email" class="form-control" id="regEmail" required>
+                                        <div class="invalid-feedback">请输入有效的邮箱地址</div>
+                                    </div>
+                                    <div class="error-message text-danger mt-1"></div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="regRole" class="form-label">角色</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-briefcase"></i></span>
+                                        <select class="form-select" id="regRole" required>
+                                            <option value="" disabled selected>请选择角色</option>
+                                            <option value="学生">学生</option>
+                                            <option value="教师">教师</option>
+                                            <option value="家长">家长</option>
+                                            <option value="管理员">管理员</option>
+                                        </select>
+                                        <div class="invalid-feedback">请选择一个角色</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4" id="authCodeContainer" style="display: none;">
+                                    <label for="regAuthCode" class="form-label">管理员授权码</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light"><i class="fas fa-key"></i></span>
+                                        <input type="text" class="form-control" id="regAuthCode">
+                                        <div class="invalid-feedback">管理员需要输入授权码</div>
+                                    </div>
+                                    <div class="error-message text-danger mt-1"></div>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-success w-100 py-2">
+                                    <i class="fas fa-user-plus me-1"></i>注册
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card-footer bg-light text-center py-3">
+                    <small>© 2023 用户认证系统</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // API基础路径
+    const API_BASE = "/users";
+    
+    // DOM元素加载完成后执行
+    document.addEventListener('DOMContentLoaded', function() {
+        // 初始化表单验证
+        initFormValidation();
+        
+        // 初始化密码显示/隐藏功能
+        initPasswordToggle();
+        
+        // 初始化角色选择逻辑
+        initRoleSelection();
+        
+        // 绑定表单提交事件
+        bindFormSubmits();
+    });
+    
+    /**
+     * 初始化表单验证
+     */
+    function initFormValidation() {
+        // 为所有输入框添加实时验证
+        const inputs = document.querySelectorAll('input[required], select[required]');
+        inputs.forEach(input => {
+            input.addEventListener('blur', function() {
+                validateField(this);
+            });
+            
+            // 密码强度实时检测
+            if (this.id === 'regPassword') {
+                this.addEventListener('input', checkPasswordStrength);
+            }
+        });
+    }
+    
+    /**
+     * 初始化密码显示/隐藏功能
+     */
+    function initPasswordToggle() {
+        const toggleButtons = document.querySelectorAll('.toggle-password');
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const passwordInput = document.getElementById(targetId);
+                const icon = this.querySelector('i');
+                
+                // 切换密码可见性
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        });
+    }
+    
+    /**
+     * 初始化角色选择逻辑
+     */
+    function initRoleSelection() {
+        const roleSelect = document.getElementById('regRole');
+        const authCodeContainer = document.getElementById('authCodeContainer');
+        const authCodeInput = document.getElementById('regAuthCode');
+        
+        // 角色变化时显示/隐藏授权码输入框
+        roleSelect.addEventListener('change', function() {
+            if (this.value === '管理员') {
+                authCodeContainer.style.display = 'block';
+                authCodeInput.required = true;
+            } else {
+                authCodeContainer.style.display = 'none';
+                authCodeInput.required = false;
+                clearError(authCodeInput);
+            }
+        });
+    }
+    
+    /**
+     * 绑定表单提交事件
+     */
+    function bindFormSubmits() {
+        // 登录表单提交
+        document.getElementById('loginForm').addEventListener('submit', handleLogin);
+        
+        // 注册表单提交
+        document.getElementById('registerForm').addEventListener('submit', handleRegister);
+    }
+    
+    /**
+     * 验证单个表单字段
+     * @param {HTMLElement} field - 表单字段元素
+     * @returns {boolean} 验证是否通过
+     */
+    function validateField(field) {
+        const errorElement = field.parentElement.nextElementSibling;
+        let isValid = true;
+        let errorMessage = '';
+        
+        // 检查必填项
+        if (!field.value.trim()) {
+            isValid = false;
+            errorMessage = '此字段不能为空';
+        } 
+        // 检查用户名长度
+        else if ((field.id === 'loginUsername' || field.id === 'regUsername') && 
+                (field.value.length < 3 || field.value.length > 20)) {
+            isValid = false;
+            errorMessage = '用户名长度必须在3-20位之间';
+        } 
+        // 检查密码长度
+        else if ((field.id === 'loginPassword' || field.id === 'regPassword') && 
+                field.value.length < 6) {
+            isValid = false;
+            errorMessage = '密码长度不能少于6位';
+        } 
+        // 检查邮箱格式
+        else if (field.type === 'email' && !isValidEmail(field.value)) {
+            isValid = false;
+            errorMessage = '请输入有效的邮箱地址';
+        }
+        
+        // 更新UI显示验证结果
+        if (!isValid) {
+            field.classList.add('is-invalid');
+            field.classList.remove('is-valid');
+            if (errorElement && errorElement.classList.contains('error-message')) {
+                errorElement.textContent = errorMessage;
+            }
+        } else {
+            field.classList.remove('is-invalid');
+            field.classList.add('is-valid');
+            if (errorElement && errorElement.classList.contains('error-message')) {
+                errorElement.textContent = '';
+            }
+        }
+        
+        return isValid;
+    }
+    
+    /**
+     * 验证整个表单
+     * @param {HTMLFormElement} form - 表单元素
+     * @returns {boolean} 表单是否通过验证
+     */
+    function validateForm(form) {
+        const fields = form.querySelectorAll('input[required], select[required]');
+        let isFormValid = true;
+        
+        fields.forEach(field => {
+            if (!validateField(field)) {
+                isFormValid = false;
+            }
+        });
+        
+        return isFormValid;
+    }
+    
+    /**
+     * 清除字段错误状态
+     * @param {HTMLElement} field - 表单字段元素
+     */
+    function clearError(field) {
+        const errorElement = field.parentElement.nextElementSibling;
+        field.classList.remove('is-invalid');
+        if (errorElement && errorElement.classList.contains('error-message')) {
+            errorElement.textContent = '';
+        }
+    }
+    
+    /**
+     * 检查邮箱格式是否有效
+     * @param {string} email - 邮箱地址
+     * @returns {boolean} 邮箱格式是否有效
+     */
+    function isValidEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
+    
+    /**
+     * 检查密码强度
+     */
+    function checkPasswordStrength() {
+        const passwordInput = document.getElementById('regPassword');
+        const password = passwordInput.value;
+        const strengthBar = document.querySelector('.password-strength');
+        const strengthText = document.getElementById('passwordStrengthText');
+        
+        let strength = 0;
+        let text = '';
+        let color = '';
+        
+        // 密码为空时重置
+        if (!password) {
+            strengthBar.style.width = '0%';
+            strengthText.textContent = '密码强度: 未输入';
+            return;
+        }
+        
+        // 基础长度检查
+        if (password.length >= 6) strength += 25;
+        if (password.length >= 10) strength += 25;
+        
+        // 检查是否包含数字
+        if (/[0-9]/.test(password)) strength += 25;
+        
+        // 检查是否包含字母(大小写)或特殊字符
+        if (/[A-Z]/.test(password) || /[a-z]/.test(password) || /[^A-Za-z0-9]/.test(password)) {
+            strength += 25;
+        }
+        
+        // 设置强度文本和颜色
+        if (strength < 50) {
+            text = '密码强度: 弱';
+            color = 'bg-danger';
+        } else if (strength < 75) {
+            text = '密码强度: 中';
+            color = 'bg-warning';
+        } else {
+            text = '密码强度: 强';
+            color = 'bg-success';
+        }
+        
+        // 更新UI
+        strengthBar.className = 'password-strength ' + color;
+        strengthBar.style.width = strength + '%';
+        strengthText.textContent = text;
+    }
+    
+    /**
+     * 处理登录表单提交
+     * @param {Event} e - 事件对象
+     */
+    async function handleLogin(e) {
+        e.preventDefault();
+        const form = e.target;
+        
+        // 表单验证
+        if (!validateForm(form)) {
+            return;
+        }
+        
+        // 获取表单数据
+        const username = document.getElementById('loginUsername').value;
+        const password = document.getElementById('loginPassword').value;
+        const rememberMe = document.getElementById('rememberMe').checked;
+        
+        // 获取提交按钮并设置加载状态
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.classList.add('btn-loading');
+        submitBtn.innerHTML = '';
+        
+        try {
+            // 发送登录请求
+            const res = await fetch(`${API_BASE}/login`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    username,
+                    password,
+                    remember_me: rememberMe
+                })
+            });
+            
+            const result = await res.json();
+            
+            if (res.ok) {
+                // 登录成功处理
+                showToast('登录成功，正在跳转...', 'success');
+                
+                // 延迟跳转，让用户看到提示
+                setTimeout(() => {
+                    // 根据用户角色跳转到不同页面
+                    window.location.href = result.redirect || '/dashboard';
+                }, 1500);
+            } else {
+                // 登录失败处理
+                const errorField = result.field ? document.getElementById('login' + 
+                    result.field.charAt(0).toUpperCase() + result.field.slice(1)) : null;
+                
+                if (errorField) {
+                    // 显示特定字段的错误
+                    errorField.classList.add('is-invalid');
+                    const errorElement = errorField.parentElement.nextElementSibling;
+                    if (errorElement && errorElement.classList.contains('error-message')) {
+                        errorElement.textContent = result.error;
+                    }
+                } else {
+                    // 显示全局错误
+                    showToast(result.error || '登录失败，请检查您的用户名和密码', 'error');
+                }
+            }
+        } catch (err) {
+            console.error('登录请求失败:', err);
+            showToast('网络错误，登录请求失败', 'error');
+        } finally {
+            // 恢复按钮状态
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('btn-loading');
+            submitBtn.innerHTML = originalText;
+        }
+    }
+    
+    /**
+     * 处理注册表单提交
+     * @param {Event} e - 事件对象
+     */
+    async function handleRegister(e) {
+        e.preventDefault();
+        const form = e.target;
+        
+        // 表单验证
+        if (!validateForm(form)) {
+            return;
+        }
+        
+        // 获取表单数据
+        const data = {
+            name: document.getElementById('regUsername').value,
+            password: document.getElementById('regPassword').value,
+            email: document.getElementById('regEmail').value,
+            role: document.getElementById('regRole').value
+        };
+        
+        // 如果是管理员，添加授权码
+        if (data.role === '管理员') {
+            data.auth_code = document.getElementById('regAuthCode').value;
+        }
+        
+        // 获取提交按钮并设置加载状态
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.classList.add('btn-loading');
+        submitBtn.innerHTML = '';
+        
+        try {
+            // 发送注册请求
+            const res = await fetch(`${API_BASE}/register`, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(data)
+            });
+            
+            const result = await res.json();
+            
+            if (res.ok) {
+                // 注册成功处理
+                showToast('注册成功，请登录', 'success');
+                
+                // 切换到登录标签页
+                const loginTab = new bootstrap.Tab(document.getElementById('login-tab'));
+                loginTab.show();
+                
+                // 填充用户名到登录表单
+                document.getElementById('loginUsername').value = data.name;
+                
+                // 重置注册表单
+                form.reset();
+                document.querySelector('.password-strength').style.width = '0%';
+                document.getElementById('passwordStrengthText').textContent = '密码强度: 未输入';
+                document.getElementById('authCodeContainer').style.display = 'none';
+            } else {
+                // 注册失败处理
+                const errorField = result.field ? document.getElementById('reg' + 
+                    result.field.charAt(0).toUpperCase() + result.field.slice(1)) : null;
+                
+                if (errorField) {
+                    // 显示特定字段的错误
+                    errorField.classList.add('is-invalid');
+                    const errorElement = errorField.parentElement.nextElementSibling;
+                    if (errorElement && errorElement.classList.contains('error-message')) {
+                        errorElement.textContent = result.error;
+                    }
+                } else {
+                    // 显示全局错误
+                    showToast(result.error || '注册失败，请稍后重试', 'error');
+                }
+            }
+        } catch (err) {
+            console.error('注册请求失败:', err);
+            showToast('网络错误，注册请求失败', 'error');
+        } finally {
+            // 恢复按钮状态
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('btn-loading');
+            submitBtn.innerHTML = originalText;
+        }
+    }
+    
+    /**
+     * 显示提示消息
+     * @param {string} message - 消息内容
+     * @param {string} type - 消息类型：success, error, info
+     */
+    function showToast(message, type = 'info') {
+        // 检查是否已有toast元素，有则移除
+        let toastElement = document.getElementById('customToast');
+        if (toastElement) {
+            toastElement.remove();
+        }
+        
+        // 创建toast元素
+        toastElement = document.createElement('div');
+        toastElement.id = 'customToast';
+        toastElement.className = `toast position-fixed bottom-3 end-3 text-white ${
+            type === 'success' ? 'bg-success' : 
+            type === 'error' ? 'bg-danger' : 'bg-info'
+        }`;
+        toastElement.role = 'alert';
+        toastElement.setAttribute('aria-live', 'assertive');
+        toastElement.setAttribute('aria-atomic', 'true');
+        
+        // 设置toast内容
+        toastElement.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body">${message}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        `;
+        
+        // 添加到页面并显示
+        document.body.appendChild(toastElement);
+        const toast = new bootstrap.Toast(toastElement);
+        toast.show();
+        
+        // 3秒后自动移除
+        setTimeout(() => {
+            toastElement.remove();
+        }, 3000);
+    }
+</script>
 </body>
 </html>

@@ -1,8 +1,8 @@
 package models
 
 type Teacher struct {
-	ID     uint   `gorm:"primaryKey"`
-	UserID uint   `gorm:"uniqueIndex"`
-	User   User   `gorm:"constraint:OnDelete:CASCADE;"`
-	Dept   string `gorm:"size:255"`
+	ID     uint
+	UserID uint
+	User   User `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Dept   string
 }
