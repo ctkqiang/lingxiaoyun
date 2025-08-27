@@ -7,8 +7,11 @@ import (
 )
 
 func UserRoutes(app *fiber.App) {
-	user := app.Group("/api/users")
+	users := app.Group("/users")
 
-	user.Get("/", handlers.GetUser)
-	user.Post("/", handlers.CreateUser)
+	users.Get("/", handlers.GetUsers)
+	users.Get("/:id", handlers.GetUser)
+	users.Post("/", handlers.CreateUser)
+	users.Put("/:id", handlers.UpdateUser)
+	users.Delete("/:id", handlers.DeleteUser)
 }

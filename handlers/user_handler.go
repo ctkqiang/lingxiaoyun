@@ -42,6 +42,7 @@ type CreateUserInput struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 	Role     string `json:"role"`
+	AuthCode string `json:"auth_code"`
 }
 
 type UpdateUserInput struct {
@@ -84,9 +85,11 @@ func GetUsers(c *fiber.Ctx) error {
 func GetUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 	var user User
+
 	if err := config.DB.First(&user, id).Error; err != nil {
 		return c.Status(404).JSON(fiber.Map{"error": "用户未找到"})
 	}
+
 	return c.JSON(toUserResponse(user))
 }
 
@@ -102,6 +105,7 @@ func CreateUser(c *fiber.Ctx) error {
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), 14)
+
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "密码加密失败"})
 	}
